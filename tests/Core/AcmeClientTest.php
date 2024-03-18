@@ -32,12 +32,17 @@ use AcmePhp\Ssl\Parser\KeyParser;
 use AcmePhp\Ssl\Signer\DataSigner;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Prophecy\PhpUnit\ProphecyTrait;
 
 class AcmeClientTest extends AbstractFunctionnalTest
 {
     use ProphecyTrait;
-    public function provideFullProcess()
+
+    /**
+     * @return iterable<string, array{0: KeyOption, bool}>
+     */
+    public static function provideFullProcess(): iterable
     {
         yield 'rsa1024' => [new RsaKeyOption(1024), false];
         yield 'rsa1024-alternate' => [new RsaKeyOption(1024), true];
@@ -46,9 +51,7 @@ class AcmeClientTest extends AbstractFunctionnalTest
         yield 'ecsecp384r1' => [new EcKeyOption('secp384r1'), false];
     }
 
-    /**
-     * @dataProvider provideFullProcess
-     */
+    #[DataProvider('provideFullProcess')]
     public function testFullProcess(KeyOption $keyOption, bool $useAlternateCertificate)
     {
         $secureHttpClient = new SecureHttpClient(

@@ -34,11 +34,15 @@ use AcmePhp\Core\Exception\Server\UserActionRequiredServerException;
 use AcmePhp\Core\Http\ServerErrorHandler;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class ServerErrorHandlerTest extends TestCase
+final class ServerErrorHandlerTest extends TestCase
 {
-    public function getErrorTypes()
+    /**
+     * @return list<array{0: string, 1: class-string<AcmeCoreServerException>}>
+     */
+    public static function getErrorTypes(): array
     {
         return [
             ['badCSR', BadCsrServerException::class],
@@ -63,9 +67,7 @@ class ServerErrorHandlerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getErrorTypes
-     */
+    #[DataProvider('getErrorTypes')]
     public function testAcmeExceptionThrown($type, $exceptionClass)
     {
         $errorHandler = new ServerErrorHandler();

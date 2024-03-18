@@ -12,17 +12,13 @@
 namespace Tests\AcmePhp\Core\Http;
 
 use AcmePhp\Core\Http\Base64SafeEncoder;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class Base64SafeEncoderTest extends TestCase
+final class Base64SafeEncoderTest extends TestCase
 {
-    /**
-     * @dataProvider getTestVectors
-     *
-     * @param string $message
-     * @param string $expected
-     */
-    public function testEncodeAndDecode($message, $expected)
+    #[DataProvider('getTestVectors')]
+    public function testEncodeAndDecode(string $message, string $expected): void
     {
         $encoder = new Base64SafeEncoder();
 
@@ -35,8 +31,9 @@ class Base64SafeEncoderTest extends TestCase
 
     /**
      * @see https://tools.ietf.org/html/rfc4648#section-10
+     * @return list<array{0: string , 1:string}>
      */
-    public function getTestVectors()
+    public static function getTestVectors(): array
     {
         return [
             [
@@ -72,19 +69,18 @@ class Base64SafeEncoderTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getTestBadVectors
-     *
-     * @param string $input
-     */
-    public function testBadInput($input)
+    #[DataProvider('getTestBadVectors')]
+    public function testBadInput(string $input): void
     {
         $encoder = new Base64SafeEncoder();
         $decoded = $encoder->decode($input);
         $this->assertEquals("\00", $decoded);
     }
 
-    public function getTestBadVectors()
+    /**
+     * @return list<array{0: string}>
+     */
+    public static function getTestBadVectors(): array
     {
         return [
             [
