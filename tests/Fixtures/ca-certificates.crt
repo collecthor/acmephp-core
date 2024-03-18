@@ -1,11 +1,4 @@
-#!/usr/bin/env bash
-
-# Root directory
-cd $( dirname "${BASH_SOURCE[0]}" )
-cd ..
-
-tempfile=$(mktemp)
-cert='-----BEGIN CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
 MIIDCTCCAfGgAwIBAgIIJOLbes8sTr4wDQYJKoZIhvcNAQELBQAwIDEeMBwGA1UE
 AxMVbWluaWNhIHJvb3QgY2EgMjRlMmRiMCAXDTE3MTIwNjE5NDIxMFoYDzIxMTcx
 MjA2MTk0MjEwWjAgMR4wHAYDVQQDExVtaW5pY2Egcm9vdCBjYSAyNGUyZGIwggEi
@@ -23,8 +16,4 @@ xseM4P9EVJaQxwuK/F78YBt0tCNfivC6JNZMgxKF59h0FBpH70ytUSHXdz7FKwix
 Mfn3qEb9BXSk0Q3prNV5sOV3vgjEtB4THfDxSz9z3+DepVnW3vbbqwEbkXdk3j82
 2muVldgOUgTwK8eT+XdofVdntzU/kzygSAtAQwLJfn51fS1GvEcYGBc1bDryIqmF
 p9BI7gVKtWSZYegicA==
------END CERTIFICATE-----'
-echo "$cert" > "$tempfile"
-trap "{ rm -f $tempfile; }" EXIT
-
-php -d curl.cainfo="$tempfile" ./vendor/bin/simple-phpunit "$@"
+-----END CERTIFICATE-----

@@ -177,7 +177,7 @@ class SecureHttpClientTest extends TestCase
         $this->assertEquals('POST', $request->getMethod());
         $this->assertEquals('/acme/new-reg', ($request->getUri() instanceof Uri) ? $request->getUri()->getPath() : $request->getUri());
 
-        $body = \GuzzleHttp\Psr7\copy_to_string($request->getBody());
+        $body = $request->getBody()->getContents();
         $payload = @json_decode($body, true);
 
         $this->assertIsArray($payload);

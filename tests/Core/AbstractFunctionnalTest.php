@@ -17,18 +17,21 @@ use PHPUnit\Framework\TestCase;
 
 abstract class AbstractFunctionnalTest extends TestCase
 {
+    protected function setUp(): void
+    {
+
+    }
     protected function handleChallenge($token, $payload)
     {
         $fakeServer = new Client();
-        $response = $fakeServer->post('http://localhost:8055/add-http01', [RequestOptions::JSON => ['token' => $token, 'content' => $payload]]);
-
+        $response = $fakeServer->post('http://challtestsrv:8055/add-http01', [RequestOptions::JSON => ['token' => $token, 'content' => $payload]]);
         $this->assertSame(200, $response->getStatusCode());
     }
 
     protected function cleanChallenge($token)
     {
         $fakeServer = new Client();
-        $response = $fakeServer->post('http://localhost:8055/del-http01', [RequestOptions::JSON => ['token' => $token]]);
+        $response = $fakeServer->post('http://challtestsrv:8055/del-http01', [RequestOptions::JSON => ['token' => $token]]);
 
         $this->assertSame(200, $response->getStatusCode());
     }

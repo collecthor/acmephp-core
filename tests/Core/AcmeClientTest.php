@@ -30,6 +30,7 @@ use AcmePhp\Ssl\Generator\RsaKey\RsaKeyOption;
 use AcmePhp\Ssl\Parser\KeyParser;
 use AcmePhp\Ssl\Signer\DataSigner;
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 
 class AcmeClientTest extends AbstractFunctionnalTest
 {
@@ -56,14 +57,16 @@ class AcmeClientTest extends AbstractFunctionnalTest
             new ServerErrorHandler()
         );
 
-        $client = new AcmeClient($secureHttpClient, 'https://localhost:14000/dir');
+
 
         /*
          * Register account
          */
         if ('eab' === getenv('PEBBLE_MODE')) {
+            $client = new AcmeClient($secureHttpClient, 'https://pebble-eab:14000/dir');
             $data = $client->registerAccount('titouan.galopin@acmephp.com', new ExternalAccount('kid1', 'dGVzdGluZw'));
         } else {
+            $client = new AcmeClient($secureHttpClient, 'https://pebble:14000/dir');
             $data = $client->registerAccount('titouan.galopin@acmephp.com');
         }
 
@@ -71,11 +74,14 @@ class AcmeClientTest extends AbstractFunctionnalTest
         $this->assertArrayHasKey('key', $data);
 
         $solver = new SimpleHttpSolver();
-
+        $fakeServer = new Client();
+        $response = $fakeServer->post('http://challtestsrv:8055/set-default-ipv4', [RequestOptions::JSON => ['ip' => gethostbyname('challtestsrv')]]);
+        $this->assertSame(200, $response->getStatusCode());
         /*
          * Ask for domain challenge
          */
         $order = $client->requestOrder(['acmephp.com']);
+
         $this->assertEquals('pending', $order->getStatus());
         $challenges = $order->getAuthorizationChallenges('acmephp.com');
         foreach ($challenges as $challenge) {
@@ -86,7 +92,7 @@ class AcmeClientTest extends AbstractFunctionnalTest
 
         $this->assertInstanceOf(AuthorizationChallenge::class, $challenge);
         $this->assertEquals('acmephp.com', $challenge->getDomain());
-        $this->assertStringContainsString('https://localhost:14000/chalZ/', $challenge->getUrl());
+        $this->assertStringContainsString(':14000/chalZ/', $challenge->getUrl());
 
         $solver->solve($challenge);
 

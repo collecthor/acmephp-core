@@ -1,0 +1,50 @@
+version: "3.8"
+services:
+  acme_sftp:
+    image: atmoz/sftp
+    command: acmephp:acmephp:::share
+  challtestsrv:
+    image: letsencrypt/pebble-challtestsrv
+    command:
+      - "pebble-challtestsrv"
+      - -defaultIPv6
+      - '""'
+  pebble:
+    image: letsencrypt/pebble
+    depends_on: ['challtestsrv']
+    command:
+      - pebble
+      - -config
+      - /test/config.json
+      - -dnsserver
+      - challtestsrv:8053
+    environment:
+      PEBBLE_VA_NOSLEEP: 1
+      PEBBLE_WFE_NONCEREJECT: 0
+    volumes:
+      - "./tests/Fixtures/pebble-config-default.json:/test/config.json:ro"
+  pebble-eab:
+    image: letsencrypt/pebble
+    depends_on: ['challtestsrv']
+    command:
+      - pebble
+      - -config
+      - /test/config.json
+      - -dnsserver
+      - challtestsrv:8053
+    environment:
+      PEBBLE_VA_NOSLEEP: 1
+      PEBBLE_WFE_NONCEREJECT: 0
+    volumes:
+      - "./tests/Fixtures/pebble-config-eab.json:/test/config.json:ro"
+  phpunit:
+    image: php:${PHP_VERSION}8.2-cli-alpine
+    depends_on: ['pebble', 'pebble-eab', 'challtestsrv', 'acme_sftp']
+    init: true
+    entrypoint:
+      - "php"
+      - "vendor/bin/phpunit"
+    working_dir: "/project"
+    volumes:
+      - "./:/project"
+      - "./tests/Fixtures/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro"
