@@ -12,7 +12,6 @@
 namespace AcmePhp\Core\Filesystem\Adapter;
 
 use AcmePhp\Core\Filesystem\FilesystemInterface;
-use League\Flysystem\FilesystemInterface as FlysystemFilesystemInterface;
 use League\Flysystem\FilesystemOperator;
 
 class FlysystemAdapter implements FilesystemInterface

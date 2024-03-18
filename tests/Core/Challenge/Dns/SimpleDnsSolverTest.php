@@ -14,19 +14,21 @@ namespace Tests\AcmePhp\Core\Challenge\Dns;
 use AcmePhp\Core\Challenge\Dns\DnsDataExtractor;
 use AcmePhp\Core\Challenge\Dns\SimpleDnsSolver;
 use AcmePhp\Core\Protocol\AuthorizationChallenge;
+use AcmePhp\Core\Util\PrinterInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Symfony\Component\Console\Output\OutputInterface;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class SimpleDnsSolverTest extends TestCase
 {
+    use ProphecyTrait;
     public function testSupports()
     {
         $typeDns = 'dns-01';
         $typeHttp = 'http-01';
 
         $mockExtractor = $this->prophesize(DnsDataExtractor::class);
-        $mockOutput = $this->prophesize(OutputInterface::class);
+        $mockOutput = $this->prophesize(PrinterInterface::class);
         $stubChallenge = $this->prophesize(AuthorizationChallenge::class);
 
         $solver = new SimpleDnsSolver($mockExtractor->reveal(), $mockOutput->reveal());
@@ -44,7 +46,7 @@ class SimpleDnsSolverTest extends TestCase
         $recordValue = 'record_value';
 
         $mockExtractor = $this->prophesize(DnsDataExtractor::class);
-        $mockOutput = $this->prophesize(OutputInterface::class);
+        $mockOutput = $this->prophesize(PrinterInterface::class);
         $stubChallenge = $this->prophesize(AuthorizationChallenge::class);
 
         $solver = new SimpleDnsSolver($mockExtractor->reveal(), $mockOutput->reveal());
@@ -52,7 +54,7 @@ class SimpleDnsSolverTest extends TestCase
         $mockExtractor->getRecordName($stubChallenge->reveal())->willReturn($recordName);
         $mockExtractor->getRecordValue($stubChallenge->reveal())->willReturn($recordValue);
 
-        $mockOutput->writeln(Argument::any())->shouldBeCalled();
+        $mockOutput->write(Argument::any())->shouldBeCalled();
 
         $solver->solve($stubChallenge->reveal());
     }
@@ -63,7 +65,7 @@ class SimpleDnsSolverTest extends TestCase
         $recordValue = 'record_value';
 
         $mockExtractor = $this->prophesize(DnsDataExtractor::class);
-        $mockOutput = $this->prophesize(OutputInterface::class);
+        $mockOutput = $this->prophesize(PrinterInterface::class);
         $stubChallenge = $this->prophesize(AuthorizationChallenge::class);
 
         $solver = new SimpleDnsSolver($mockExtractor->reveal(), $mockOutput->reveal());
@@ -71,7 +73,7 @@ class SimpleDnsSolverTest extends TestCase
         $mockExtractor->getRecordName($stubChallenge->reveal())->willReturn($recordName);
         $mockExtractor->getRecordValue($stubChallenge->reveal())->willReturn($recordValue);
 
-        $mockOutput->writeln(Argument::any())->shouldBeCalled();
+        $mockOutput->write(Argument::any())->shouldBeCalled();
 
         $solver->cleanup($stubChallenge->reveal());
     }

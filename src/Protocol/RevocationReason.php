@@ -16,7 +16,7 @@ use Webmozart\Assert\Assert;
 /**
  * @url https://github.com/certbot/certbot/blob/c326c021082dede7c3b2bd411cec3aec6dff0ac5/certbot/constants.py#L124
  */
-class RevocationReason
+final class RevocationReason
 {
     public const DEFAULT_REASON = self::REASON_UNSPECIFIED;
     public const REASON_UNSPECIFIED = 0;

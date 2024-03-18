@@ -157,15 +157,13 @@ class SecureHttpClient
 
     /**
      * Generates an External Account Binding payload signed with JWS.
-     *
-     * @param string|array|null $payload
      */
     public function createExternalAccountPayload(ExternalAccount $externalAccount, string $url): array
     {
         $signer = new Sha256();
 
         $protected = [
-            'alg' => method_exists($signer, 'algorithmId') ? $signer->algorithmId() : $signer->getAlgorithmId(),
+            'alg' => $signer->algorithmId(),
             'kid' => $externalAccount->getId(),
             'url' => $url,
         ];
@@ -329,7 +327,7 @@ class SecureHttpClient
     private function createRequest($method, $endpoint, $data, $acceptJson)
     {
         $request = new Request($method, $endpoint);
-        
+
         if ($acceptJson) {
             $request = $request->withHeader('Accept', 'application/json,application/jose+json,');
         } else {

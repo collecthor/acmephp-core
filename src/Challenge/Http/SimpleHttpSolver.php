@@ -13,6 +13,7 @@ namespace AcmePhp\Core\Challenge\Http;
 
 use AcmePhp\Core\Challenge\SolverInterface;
 use AcmePhp\Core\Protocol\AuthorizationChallenge;
+use AcmePhp\Core\Util\PrinterInterface;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -23,20 +24,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class SimpleHttpSolver implements SolverInterface
 {
-    /**
-     * @var HttpDataExtractor
-     */
-    private $extractor;
+    private readonly HttpDataExtractor $extractor;
 
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    public function __construct(HttpDataExtractor $extractor = null, OutputInterface $output = null)
+    public function __construct(HttpDataExtractor $extractor = null, private readonly PrinterInterface $output)
     {
         $this->extractor = $extractor ?: new HttpDataExtractor();
-        $this->output = $output ?: new NullOutput();
     }
 
     /**
@@ -55,7 +47,7 @@ class SimpleHttpSolver implements SolverInterface
         $checkUrl = $this->extractor->getCheckUrl($authorizationChallenge);
         $checkContent = $this->extractor->getCheckContent($authorizationChallenge);
 
-        $this->output->writeln(
+        $this->output->write(
             sprintf(
                 <<<'EOF'
     Create a text file accessible on URL %s
@@ -71,7 +63,7 @@ EOF
                 $checkUrl,
                 $checkContent,
                 $checkContent
-            )
+            ) . "\n"
         );
     }
 
@@ -82,7 +74,7 @@ EOF
     {
         $checkUrl = $this->extractor->getCheckUrl($authorizationChallenge);
 
-        $this->output->writeln(
+        $this->output->write(
             sprintf(
                 <<<'EOF'
                     You can now safely remove the challenge's file at %s
@@ -90,7 +82,7 @@ EOF
 EOF
                 ,
                 $checkUrl
-            )
+            ) . "\n"
         );
     }
 }

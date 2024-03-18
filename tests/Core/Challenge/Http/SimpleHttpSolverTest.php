@@ -14,12 +14,14 @@ namespace Tests\AcmePhp\Core\Challenge\Http;
 use AcmePhp\Core\Challenge\Http\HttpDataExtractor;
 use AcmePhp\Core\Challenge\Http\SimpleHttpSolver;
 use AcmePhp\Core\Protocol\AuthorizationChallenge;
+use AcmePhp\Core\Util\PrinterInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Symfony\Component\Console\Output\OutputInterface;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class SimpleHttpSolverTest extends TestCase
 {
+    use ProphecyTrait;
     public function testSupports()
     {
         $typeDns = 'dns-01';
@@ -27,7 +29,7 @@ class SimpleHttpSolverTest extends TestCase
 
         $stubChallenge = $this->prophesize(AuthorizationChallenge::class);
 
-        $solver = new SimpleHttpSolver();
+        $solver = new SimpleHttpSolver(null, $this->prophesize(PrinterInterface::class)->reveal());
 
         $stubChallenge->getType()->willReturn($typeDns);
         $this->assertFalse($solver->supports($stubChallenge->reveal()));
@@ -42,7 +44,7 @@ class SimpleHttpSolverTest extends TestCase
         $checkContent = 'randomPayload';
 
         $mockExtractor = $this->prophesize(HttpDataExtractor::class);
-        $mockOutput = $this->prophesize(OutputInterface::class);
+        $mockOutput = $this->prophesize(PrinterInterface::class);
         $stubChallenge = $this->prophesize(AuthorizationChallenge::class);
 
         $solver = new SimpleHttpSolver($mockExtractor->reveal(), $mockOutput->reveal());
@@ -50,7 +52,7 @@ class SimpleHttpSolverTest extends TestCase
         $mockExtractor->getCheckUrl($stubChallenge->reveal())->willReturn($checkUrl);
         $mockExtractor->getCheckContent($stubChallenge->reveal())->willReturn($checkContent);
 
-        $mockOutput->writeln(Argument::any())->shouldBeCalled();
+        $mockOutput->write(Argument::any())->shouldBeCalled();
 
         $solver->solve($stubChallenge->reveal());
     }
@@ -61,7 +63,7 @@ class SimpleHttpSolverTest extends TestCase
         $checkContent = 'randomPayload';
 
         $mockExtractor = $this->prophesize(HttpDataExtractor::class);
-        $mockOutput = $this->prophesize(OutputInterface::class);
+        $mockOutput = $this->prophesize(PrinterInterface::class);
         $stubChallenge = $this->prophesize(AuthorizationChallenge::class);
 
         $solver = new SimpleHttpSolver($mockExtractor->reveal(), $mockOutput->reveal());
@@ -69,7 +71,7 @@ class SimpleHttpSolverTest extends TestCase
         $mockExtractor->getCheckUrl($stubChallenge->reveal())->willReturn($checkUrl);
         $mockExtractor->getCheckContent($stubChallenge->reveal())->willReturn($checkContent);
 
-        $mockOutput->writeln(Argument::any())->shouldBeCalled();
+        $mockOutput->write(Argument::any())->shouldBeCalled();
 
         $solver->cleanup($stubChallenge->reveal());
     }

@@ -18,7 +18,6 @@ jobs:
               with:
                   php-version: ${{ matrix.php }}
                   coverage: none
-
             - uses: actions/checkout@v4
 
             - name: Install dependencies
@@ -29,3 +28,5 @@ jobs:
                 PEBBLE_MODE: ${{ matrix.mode }}
 
               run: docker compose run --rm phpunit
+            - name: Static analysis
+              run: vendor/bin/phpstan

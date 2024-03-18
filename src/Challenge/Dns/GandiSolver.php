@@ -40,11 +40,6 @@ class GandiSolver implements MultipleChallengesSolverInterface, ConfigurableServ
     private $client;
 
     /**
-     * @var array
-     */
-    private $cacheZones;
-
-    /**
      * @var string
      */
     private $apiKey;

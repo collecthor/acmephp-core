@@ -14,10 +14,12 @@ namespace Tests\AcmePhp\Core\Challenge\Dns;
 use AcmePhp\Core\Challenge\Dns\DnsValidator;
 use AcmePhp\Core\Challenge\Dns\SimpleDnsResolver;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Bridge\PhpUnit\DnsMock;
 
 class SimpleDnsResolverTest extends TestCase
 {
+    use ProphecyTrait;
     public function testGetTxtEntries()
     {
         DnsMock::register(DnsValidator::class);

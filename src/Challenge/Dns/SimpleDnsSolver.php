@@ -13,6 +13,7 @@ namespace AcmePhp\Core\Challenge\Dns;
 
 use AcmePhp\Core\Challenge\SolverInterface;
 use AcmePhp\Core\Protocol\AuthorizationChallenge;
+use AcmePhp\Core\Util\PrinterInterface;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -26,21 +27,11 @@ class SimpleDnsSolver implements SolverInterface
     /**
      * @var DnsDataExtractor
      */
-    private $extractor;
+    private DnsDataExtractor $extractor;
 
-    /**
-     * @var OutputInterface
-     */
-    protected $output;
-
-    /**
-     * @param DnsDataExtractor $extractor
-     * @param OutputInterface  $output
-     */
-    public function __construct(DnsDataExtractor $extractor = null, OutputInterface $output = null)
+    public function __construct(DnsDataExtractor $extractor = null, private readonly PrinterInterface $output)
     {
         $this->extractor = $extractor ?: new DnsDataExtractor();
-        $this->output = $output ?: new NullOutput();
     }
 
     /**
@@ -59,7 +50,7 @@ class SimpleDnsSolver implements SolverInterface
         $recordName = $this->extractor->getRecordName($authorizationChallenge);
         $recordValue = $this->extractor->getRecordValue($authorizationChallenge);
 
-        $this->output->writeln(
+        $this->output->write(
             sprintf(
                 <<<'EOF'
     Add the following TXT record to your DNS zone
@@ -76,7 +67,7 @@ EOF
                 $recordName,
                 $recordValue,
                 $recordName
-            )
+            ) . "\n"
         );
     }
 
@@ -87,14 +78,14 @@ EOF
     {
         $recordName = $this->extractor->getRecordName($authorizationChallenge);
 
-        $this->output->writeln(
+        $this->output->write(
             sprintf(
                 <<<'EOF'
 You can now cleanup your DNS by removing the domain <comment>_acme-challenge.%s.</comment>
 EOF
                 ,
                 $recordName
-            )
+            ). "\n"
         );
     }
 }

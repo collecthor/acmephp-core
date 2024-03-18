@@ -19,6 +19,7 @@ use AcmePhp\Core\Http\SecureHttpClient;
 use AcmePhp\Core\Http\ServerErrorHandler;
 use AcmePhp\Core\Protocol\AuthorizationChallenge;
 use AcmePhp\Core\Protocol\ExternalAccount;
+use AcmePhp\Core\Util\PrinterInterface;
 use AcmePhp\Ssl\Certificate;
 use AcmePhp\Ssl\CertificateRequest;
 use AcmePhp\Ssl\CertificateResponse;
@@ -31,9 +32,11 @@ use AcmePhp\Ssl\Parser\KeyParser;
 use AcmePhp\Ssl\Signer\DataSigner;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class AcmeClientTest extends AbstractFunctionnalTest
 {
+    use ProphecyTrait;
     public function provideFullProcess()
     {
         yield 'rsa1024' => [new RsaKeyOption(1024), false];
@@ -71,7 +74,7 @@ class AcmeClientTest extends AbstractFunctionnalTest
         $this->assertIsArray($data);
         $this->assertArrayHasKey('key', $data);
 
-        $solver = new SimpleHttpSolver();
+        $solver = new SimpleHttpSolver(null, $this->prophesize(PrinterInterface::class)->reveal());
         $fakeServer = new Client();
         $response = $fakeServer->post('http://challtestsrv:8055/set-default-ipv4', [RequestOptions::JSON => ['ip' => gethostbyname('challtestsrv')]]);
         $this->assertSame(200, $response->getStatusCode());
@@ -88,7 +91,7 @@ class AcmeClientTest extends AbstractFunctionnalTest
             }
         }
 
-        $this->assertInstanceOf(AuthorizationChallenge::class, $challenge);
+        $this->assertInstanceOf(AuthorizationChallenge::class, $challenge ?? null);
         $this->assertEquals('acmephp.com', $challenge->getDomain());
         $this->assertStringContainsString(':14000/chalZ/', $challenge->getUrl());
 
