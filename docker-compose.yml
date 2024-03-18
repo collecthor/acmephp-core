@@ -45,6 +45,8 @@ services:
       - "php"
       - "vendor/bin/phpunit"
     working_dir: "/project"
+    environment:
+      PEBBLE_MODE: ${PEBBLE_MODE-default}
     volumes:
       - "./:/project"
       - "./tests/Fixtures/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro"
