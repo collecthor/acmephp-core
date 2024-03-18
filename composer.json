@@ -45,6 +45,11 @@
             "AcmePhp\\Core\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "AcmePhp\\Core\\": "tests/"
+        }
+    },
     "config": {
         "sort-packages": true,
         "allow-plugins": {

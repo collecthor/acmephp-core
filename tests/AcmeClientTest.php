@@ -33,11 +33,27 @@ use AcmePhp\Ssl\Signer\DataSigner;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 
-class AcmeClientTest extends AbstractFunctionnalTest
+class AcmeClientTest extends TestCase
 {
     use ProphecyTrait;
+
+    private function handleChallenge($token, $payload): void
+    {
+        $fakeServer = new Client();
+        $response = $fakeServer->post('http://challtestsrv:8055/add-http01', [RequestOptions::JSON => ['token' => $token, 'content' => $payload]]);
+        $this->assertSame(200, $response->getStatusCode());
+    }
+
+    private function cleanChallenge($token): void
+    {
+        $fakeServer = new Client();
+        $response = $fakeServer->post('http://challtestsrv:8055/del-http01', [RequestOptions::JSON => ['token' => $token]]);
+
+        $this->assertSame(200, $response->getStatusCode());
+    }
 
     /**
      * @return iterable<string, array{0: KeyOption, bool}>

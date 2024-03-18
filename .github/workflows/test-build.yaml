@@ -5,28 +5,41 @@ on:
     push:
         branches:
             - master
-
 jobs:
-    tests:
-        runs-on: ubuntu-latest
-        strategy:
-          matrix:
-            php: ['8.2', '8.3']
-            mode: ['default', 'eab']
-        steps:
-            - uses: shivammathur/setup-php@v2
-              with:
-                  php-version: ${{ matrix.php }}
-                  coverage: none
-            - uses: actions/checkout@v4
+  static-analysis:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ '8.2', '8.3' ]
+    steps:
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --ansi
+      - name: Static analysis
+        run: vendor/bin/phpstan
+  tests:
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          php: ['8.2', '8.3']
+          mode: ['default', 'eab']
+      steps:
+          - uses: shivammathur/setup-php@v2
+            with:
+                php-version: ${{ matrix.php }}
+                coverage: none
+          - uses: actions/checkout@v4
 
-            - name: Install dependencies
-              run: composer install --no-interaction --no-progress --ansi
-            - name: Run tests
-              env:
-                PHP_VERSION: ${{ matrix.php }}
-                PEBBLE_MODE: ${{ matrix.mode }}
-
-              run: docker compose run --rm phpunit
-            - name: Static analysis
-              run: vendor/bin/phpstan
+          - name: Install dependencies
+            run: composer install --no-interaction --no-progress --ansi
+          - name: Run tests
+            env:
+              PHP_VERSION: ${{ matrix.php }}
+              PEBBLE_MODE: ${{ matrix.mode }}
+            run: docker compose run --rm phpunit
+          - name: Static analysis
+            run: vendor/bin/phpstan
