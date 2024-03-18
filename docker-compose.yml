@@ -38,7 +38,7 @@ services:
     volumes:
       - "./tests/Fixtures/pebble-config-eab.json:/test/config.json:ro"
   phpunit:
-    image: php:${PHP_VERSION}8.2-cli-alpine
+    image: php:${PHP_VERSION-8.2}-cli-alpine
     depends_on: ['pebble', 'pebble-eab', 'challtestsrv', 'acme_sftp']
     init: true
     entrypoint:
