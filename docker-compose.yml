@@ -22,24 +22,11 @@ services:
       PEBBLE_VA_NOSLEEP: 1
       PEBBLE_WFE_NONCEREJECT: 0
     volumes:
-      - "./tests/Fixtures/pebble-config-default.json:/test/config.json:ro"
-  pebble-eab:
-    image: letsencrypt/pebble
-    depends_on: ['challtestsrv']
-    command:
-      - pebble
-      - -config
-      - /test/config.json
-      - -dnsserver
-      - challtestsrv:8053
-    environment:
-      PEBBLE_VA_NOSLEEP: 1
-      PEBBLE_WFE_NONCEREJECT: 0
-    volumes:
-      - "./tests/Fixtures/pebble-config-eab.json:/test/config.json:ro"
+      - "./tests/Fixtures/pebble-config-${PEBBLE_MODE-default}.json:/test/config.json:ro"
+
   phpunit:
     image: php:${PHP_VERSION-8.2}-cli-alpine
-    depends_on: ['pebble', 'pebble-eab', 'challtestsrv', 'acme_sftp']
+    depends_on: ['pebble', 'challtestsrv', 'acme_sftp']
     init: true
     entrypoint:
       - "php"

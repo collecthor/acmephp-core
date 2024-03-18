@@ -12,7 +12,7 @@ jobs:
         strategy:
           matrix:
             php: ['8.2', '8.3']
-            mode: ['eab', 'default']
+            mode: ['default', 'eab']
         steps:
             - uses: shivammathur/setup-php@v2
               with:

@@ -58,15 +58,13 @@ class AcmeClientTest extends AbstractFunctionnalTest
         );
 
 
-
+        $client = new AcmeClient($secureHttpClient, 'https://pebble:14000/dir');
         /*
          * Register account
          */
         if ('eab' === getenv('PEBBLE_MODE')) {
-            $client = new AcmeClient($secureHttpClient, 'https://pebble-eab:14000/dir');
-            $data = $client->registerAccount('titouan.galopin@acmephp.com', new ExternalAccount('kid1', 'dGVzdGluZw'));
+            $data = $client->registerAccount('titouan.galopin@acmephp.com', new ExternalAccount('kid1', 'dGVzdGluZ3Rlc3Rpbmd0ZXN0aW5ndGVzdGluZ3Rlc3Rpbmd0ZXN0aW5ndGVzdGluZw=='));
         } else {
-            $client = new AcmeClient($secureHttpClient, 'https://pebble:14000/dir');
             $data = $client->registerAccount('titouan.galopin@acmephp.com');
         }
 
